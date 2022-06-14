@@ -1,4 +1,4 @@
-# Esempio_Imager_Maven
+# Java_Example_Imager
 > Dynamic image generation with Java servlets
  
 This application shows how to dynamically create images in a servlet and present them on a web page. 
@@ -16,6 +16,6 @@ This is a Maven-based project. Simply download the code and open it in any Maven
 
 ---
 
-![University od L'Aquila](https://www.disim.univaq.it/skins/aqua/img/logo2021-2.png)
+![University of L'Aquila](https://www.disim.univaq.it/skins/aqua/img/logo2021-2.png)
 
 
