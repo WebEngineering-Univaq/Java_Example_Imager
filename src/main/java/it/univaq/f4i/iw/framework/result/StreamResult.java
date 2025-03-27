@@ -27,6 +27,8 @@ import jakarta.servlet.http.HttpServletResponse;
  */
 public class StreamResult {
 
+    //Questa classe result in realtà non utilizza il context, ma glielo passiamo ugualmente per essere uniformi rispetto ad altre classi result del framework
+    //This result class doesn't actually use the context, but we pass it anyway to be consistent with other result classes in the framework.
     protected ServletContext context;
     protected InputStream resource;
     protected String resourceName;
@@ -64,49 +66,40 @@ public class StreamResult {
     }
 
     public void activate(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        OutputStream out = null;
+
         if (resource != null) {
-            try {
-                //disabilitiamo tutte le forme di caching...
-                //disable caching...
-                response.setHeader("Pragma", "");
-                response.setHeader("Cache-Control", "");
+            //disabilitiamo tutte le forme di caching...
+            //disable caching...
+            response.setHeader("Pragma", "");
+            response.setHeader("Cache-Control", "");
 
-                String contentType = (String) request.getAttribute("contentType");
-                if (contentType == null) {
-                    if (resourceType != null) {
-                        contentType = resourceType;
-                    } else {
-                        contentType = "application/octet-stream";
-                    }
+            String contentType = (String) request.getAttribute("contentType");
+            if (contentType == null) {
+                if (resourceType != null) {
+                    contentType = resourceType;
+                } else {
+                    contentType = "application/octet-stream";
                 }
-                response.setContentType(contentType);
-                response.setContentLength((int) this.resourceSize);
+            }
+            response.setContentType(contentType);
+            response.setContentLength((int) this.resourceSize);
 
-                String contentDisposition = (String) request.getAttribute("contentDisposition");
-                if (contentDisposition == null) {
-                    contentDisposition = "attachment";
-                }
-                contentDisposition += "; filename=\"" + this.resourceName + "\"";
-                response.setHeader("Content-Disposition", contentDisposition);
+            String contentDisposition = (String) request.getAttribute("contentDisposition");
+            if (contentDisposition == null) {
+                contentDisposition = "attachment";
+            }
+            contentDisposition += "; filename=\"" + this.resourceName + "\"";
+            response.setHeader("Content-Disposition", contentDisposition);
 
-                //copiamo lo stream in output
-                //copy the stream to the output
-                out = response.getOutputStream();
+            //copiamo lo stream in output
+            //copy the stream to the output
+            try (OutputStream out = response.getOutputStream()) {
                 byte[] buffer = new byte[1024];
                 int read;
                 while ((read = this.resource.read(buffer)) > 0) {
                     out.write(buffer, 0, read);
                 }
-            } finally {
-                try {
-                    if (out != null) {
-                        out.close();
-                    }
-                } catch (IOException ex) {
-                    //ingoriamo altri errori nel finally
-                    //ignore errors in finally clause
-                }
+
             }
         }
     }
